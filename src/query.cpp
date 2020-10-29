@@ -110,11 +110,24 @@ bool LSql::Query::bind(int index, const LSql::Value &value)
 
 bool LSql::Query::step()
 {
-    if (isValid() && sqlite3_step(m_stmt) == SQLITE_OK)
+    if (isValid())
     {
-        m_ncols = sqlite3_column_count(m_stmt);
-        return true;
+        int ret = sqlite3_step(m_stmt);
+
+        if (ret == SQLITE_ROW)
+        {
+            m_ncols = sqlite3_column_count(m_stmt);
+            return true;
+        }
+
+        m_ncols = 0;
+
+        if (ret == SQLITE_DONE)
+        {
+            return true;
+        }
     }
+
     m_ncols = 0;
     return false;
 }
