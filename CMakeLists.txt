@@ -18,17 +18,17 @@ set(${project}_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/sqlite3.h
 )
 set(${project}_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/type.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/value.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/query.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/column.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/transaction.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/connection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/type.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/value.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/query.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/column.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/transaction.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql/connection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/internal/sqlite3.h
 )
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/lsql
 )
 
 add_library(${project}
