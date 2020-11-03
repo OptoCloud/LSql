@@ -13,26 +13,6 @@ LSql::Value::Value(const sqlite3_value* value)
     }
 }
 
-LSql::Value::Value()
-{
-
-}
-
-LSql::Value::Value(int32_t val)
-{
-
-}
-
-LSql::Value::Value(int64_t val)
-{
-
-}
-
-LSql::Value::Value(double val)
-{
-
-}
-
 LSql::Value::Value(const LSql::Value& other)
     : m_value(nullptr)
 {
@@ -69,3 +49,27 @@ LSql::Type LSql::Value::type() const
     return LSql::Type::Invalid;
 }
 
+std::int32_t LSql::Value::getInt()
+{
+    return sqlite3_value_int(m_value);
+}
+std::int64_t LSql::Value::getInt64()
+{
+    return sqlite3_value_int64(m_value);
+}
+double       LSql::Value::getDouble()
+{
+    return sqlite3_value_double(m_value);
+}
+std::string  LSql::Value::getText()
+{
+    const char* ptr = (const char*)sqlite3_value_blob(m_value);
+
+    return std::string(ptr, ptr + sqlite3_value_bytes(m_value));
+}
+std::vector<std::uint8_t> LSql::Value::getBlob()
+{
+    const uint8_t* ptr = (const std::uint8_t*)sqlite3_value_blob(m_value);
+
+    return std::vector<std::uint8_t>(ptr, ptr + sqlite3_value_bytes(m_value));
+}

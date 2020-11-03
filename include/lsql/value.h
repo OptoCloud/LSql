@@ -20,28 +20,17 @@ class Value
 
     Value(const sqlite3_value* value);
 public:
-    Value(); ///< Constructs a NULL value
-    Value(std::int32_t val);
-    Value(std::int64_t val);
-    Value(double val);
-    Value(const std::string& text);
-    Value(const std::vector<std::uint8_t>& blob);
     Value(const Value& other);
-
-    void null();
-    Value& operator=(std::int32_t val);
-    Value& operator=(std::int64_t val);
-    Value& operator=(double val);
-    Value& operator=(const std::string& text);
-    Value& operator=(const std::vector<std::uint8_t>& blob);
     Value& operator=(const Value& other);
 
     bool isValid() const;
-
     LSql::Type type() const;
 
-    int getInt();
-    const char* getString();
+    std::int32_t getInt();
+    std::int64_t getInt64();
+    double       getDouble();
+    std::string  getText();
+    std::vector<std::uint8_t> getBlob();
 private:
     sqlite3_value* m_value;
 };
