@@ -32,7 +32,7 @@ std::int32_t LSql::Column::getInt()
     return sqlite3_column_int(m_query->m_stmt, m_col);
 }
 
-int64_t LSql::Column::getInt64()
+std::int64_t LSql::Column::getInt64()
 {
     return sqlite3_column_int64(m_query->m_stmt, m_col);
 }
@@ -51,7 +51,7 @@ std::string LSql::Column::getText()
 
 std::vector<std::uint8_t> LSql::Column::getBlob()
 {
-    const uint8_t* ptr = (const std::uint8_t*)sqlite3_column_blob(m_query->m_stmt, m_col);
+    const std::uint8_t* ptr = (const std::uint8_t*)sqlite3_column_blob(m_query->m_stmt, m_col);
 
     return std::vector<std::uint8_t>(ptr, ptr + sqlite3_column_bytes(m_query->m_stmt, m_col));
 }

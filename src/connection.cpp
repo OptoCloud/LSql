@@ -15,15 +15,13 @@ LSql::Connection::Connection(const char* apFilename, /* ex: "file:database.db */
 {
     if (apFilename != nullptr)
     {
-        if (sqlite3_open_v2(apFilename, &m_db, aFlags, NULL) != SQLITE_OK)
-        {
+        if (sqlite3_open_v2(apFilename, &m_db, aFlags, NULL) != SQLITE_OK) {
             sqlite3_close_v2(m_db);
             m_db = nullptr;
             return;
         }
 
-        if (aBusyTimeoutMs > 0)
-        {
+        if (aBusyTimeoutMs > 0) {
             setBusyTimeout(aBusyTimeoutMs);
         }
     }
@@ -31,12 +29,11 @@ LSql::Connection::Connection(const char* apFilename, /* ex: "file:database.db */
 
 LSql::Connection::~Connection()
 {
-    if (m_transaction != nullptr)
-    {
+    if (m_transaction != nullptr) {
         m_transaction->rollback();
     }
-    if (m_db != nullptr)
-    {
+
+    if (isOpen()) {
         sqlite3_close_v2(m_db);
     }
 }
@@ -48,8 +45,7 @@ bool LSql::Connection::isOpen() const
 
 bool LSql::Connection::setBusyTimeout(int aBusyTimeoutMs)
 {
-    if (m_db != nullptr)
-    {
+    if (isOpen()) {
         return sqlite3_busy_timeout(m_db, aBusyTimeoutMs);
     }
 
@@ -68,7 +64,7 @@ LSql::Query LSql::Connection::query(const char* statement)
 
 bool LSql::Connection::execute(const char* statement)
 {
-    return sqlite3_exec(m_db, statement, nullptr, nullptr, nullptr) == SQLITE_OK;
+    return Query(statement, *this).step();
 }
 
 bool LSql::Connection::tableExists(const char* apTableName)
@@ -79,10 +75,9 @@ bool LSql::Connection::tableExists(const char* apTableName)
     return (1 == query.column(0).getInt());
 }
 
-int64_t LSql::Connection::lastInsertedRowId() const
+std::int64_t LSql::Connection::lastInsertedRowId() const
 {
-    if (m_db != nullptr)
-    {
+    if (isOpen()) {
         return sqlite3_last_insert_rowid(m_db);
     }
 
@@ -91,8 +86,7 @@ int64_t LSql::Connection::lastInsertedRowId() const
 
 const char *LSql::Connection::lastError() const
 {
-    if (m_db != nullptr)
-    {
+    if (isOpen()) {
         return sqlite3_errmsg(m_db);
     }
 

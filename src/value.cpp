@@ -7,8 +7,7 @@
 LSql::Value::Value(const sqlite3_value* value)
     : m_value(nullptr)
 {
-    if (value != nullptr)
-    {
+    if (value != nullptr) {
         m_value = sqlite3_value_dup(value);
     }
 }
@@ -16,26 +15,28 @@ LSql::Value::Value(const sqlite3_value* value)
 LSql::Value::Value(const LSql::Value& other)
     : m_value(nullptr)
 {
-    if (other.isValid())
-    {
+    if (other.isValid()) {
         m_value = sqlite3_value_dup(other.m_value);
     }
 }
 
 LSql::Value& LSql::Value::operator=(const LSql::Value& other)
 {
-    if (isValid())
-    {
+    if (isValid()) {
         sqlite3_value_free(m_value);
         m_value = nullptr;
     }
 
-    if (other.isValid())
-    {
+    if (other.isValid()) {
         m_value = sqlite3_value_dup(other.m_value);
     }
 
     return *this;
+}
+
+LSql::Value::~Value()
+{
+    sqlite3_value_free(m_value);
 }
 
 bool LSql::Value::isValid() const
@@ -45,7 +46,10 @@ bool LSql::Value::isValid() const
 
 LSql::Type LSql::Value::type() const
 {
-    if (isValid()) return (LSql::Type)sqlite3_value_type(m_value);
+    if (isValid()) {
+        return (LSql::Type)sqlite3_value_type(m_value);
+    }
+
     return LSql::Type::Invalid;
 }
 
@@ -57,11 +61,11 @@ std::int64_t LSql::Value::getInt64()
 {
     return sqlite3_value_int64(m_value);
 }
-double       LSql::Value::getDouble()
+double LSql::Value::getDouble()
 {
     return sqlite3_value_double(m_value);
 }
-std::string  LSql::Value::getText()
+std::string LSql::Value::getText()
 {
     const char* ptr = (const char*)sqlite3_value_blob(m_value);
 

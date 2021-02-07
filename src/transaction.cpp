@@ -5,7 +5,7 @@
 LSql::Transaction::Transaction(LSql::Connection& connection)
     : m_connection(nullptr)
 {
-    if (connection.execute("BEGIN TRANSACTION;"))
+    if (connection.execute("BEGIN"))
     {
         m_connection = &connection;
         m_connection->m_transaction = this;
@@ -30,7 +30,7 @@ bool LSql::Transaction::commit()
     {
         LSql::Connection* connection = m_connection;
         m_connection = nullptr;
-        retval = connection->execute("COMMIT;");
+        retval = connection->execute("COMMIT");
         connection->m_transaction = nullptr;
     }
 
@@ -45,7 +45,7 @@ bool LSql::Transaction::rollback()
     {
         LSql::Connection* connection = m_connection;
         m_connection = nullptr;
-        retval = connection->execute("ROLLBACK;");
+        retval = connection->execute("ROLLBACK");
         connection->m_transaction = nullptr;
     }
 

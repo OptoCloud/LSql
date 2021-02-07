@@ -23,7 +23,9 @@ class Query
     Query(const Query& other);
     Query& operator=(const LSql::Query& other);
 public:
-    Query(const char* statement, LSql::Connection& connection);
+    Query(const char* statement, int statementLen, LSql::Connection& connection);
+    inline Query(const std::string& statement, LSql::Connection& connection) : Query(statement.data(), (int)statement.size(), connection){};
+    inline Query(const char* statement, LSql::Connection& connection) : Query(statement, strlen(statement), connection) {}
     ~Query();
 
     bool isValid() const;

@@ -22,6 +22,7 @@ class Value
 public:
     Value(const Value& other);
     Value& operator=(const Value& other);
+    ~Value();
 
     bool isValid() const;
     LSql::Type type() const;
