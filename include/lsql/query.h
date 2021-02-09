@@ -1,11 +1,12 @@
 #ifndef LSQL_QUERY_H
 #define LSQL_QUERY_H
 
-#include <cstdint>
-#include <string>
-#include <vector>
-
 #include "type.h"
+
+#include <vector>
+#include <string>
+#include <cstring>
+#include <cstdint>
 
 typedef struct sqlite3_stmt sqlite3_stmt;
 
