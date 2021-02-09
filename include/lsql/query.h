@@ -31,10 +31,10 @@ public:
 
     bool isValid() const;
 
-    bool bind(int index, std::int32_t value);
-    bool bind(int index, std::int64_t value);
-    bool bind(int index, double value);
-    bool bind(int index, const Value& value);
+    bool bindInt32(int index, std::int32_t value);
+    bool bindInt64(int index, std::int64_t value);
+    bool bindReal(int index, double value);
+    bool bindValue(int index, const Value& value);
     bool bindBlob(int index, const void* data, std::size_t size);
     inline bool bindBlob(int index, std::span<const std::uint8_t> blob) { return bindBlob(index, blob.data(), blob.size()); }
     bool bindString(int index, const char* data, std::size_t size);

@@ -52,7 +52,7 @@ bool LSql::Query::isValid() const
     return m_stmt != nullptr;
 }
 
-bool LSql::Query::bind(int index, std::int32_t value)
+bool LSql::Query::bindInt32(int index, std::int32_t value)
 {
     if (isValid()) {
         return sqlite3_bind_int(m_stmt, index, value) == SQLITE_OK;
@@ -61,7 +61,7 @@ bool LSql::Query::bind(int index, std::int32_t value)
     return false;
 }
 
-bool LSql::Query::bind(int index, std::int64_t value)
+bool LSql::Query::bindInt64(int index, std::int64_t value)
 {
     if (isValid()) {
         return sqlite3_bind_int64(m_stmt, index, value) == SQLITE_OK;
@@ -70,7 +70,7 @@ bool LSql::Query::bind(int index, std::int64_t value)
     return false;
 }
 
-bool LSql::Query::bind(int index, double value)
+bool LSql::Query::bindReal(int index, double value)
 {
     if (isValid()) {
         return sqlite3_bind_double(m_stmt, index, value) == SQLITE_OK;
@@ -79,7 +79,7 @@ bool LSql::Query::bind(int index, double value)
     return false;
 }
 
-bool LSql::Query::bind(int index, const LSql::Value &value)
+bool LSql::Query::bindValue(int index, const LSql::Value &value)
 {
     if (isValid()) {
         return sqlite3_bind_value(m_stmt, index, value.m_value) == SQLITE_OK;
