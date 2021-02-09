@@ -79,28 +79,28 @@ bool LSql::Query::bind(int index, double value)
     return false;
 }
 
-bool LSql::Query::bind(int index, const std::string& value)
-{
-    if (isValid()) {
-        return sqlite3_bind_text(m_stmt, index, value.data(), value.size(), nullptr) == SQLITE_OK;
-    }
-
-    return false;
-}
-
-bool LSql::Query::bind(int index, const std::vector<std::uint8_t>& value)
-{
-    if (isValid()) {
-        return sqlite3_bind_blob(m_stmt, index, value.data(), value.size(), nullptr) == SQLITE_OK;
-    }
-
-    return false;
-}
-
 bool LSql::Query::bind(int index, const LSql::Value &value)
 {
     if (isValid()) {
         return sqlite3_bind_value(m_stmt, index, value.m_value) == SQLITE_OK;
+    }
+
+    return false;
+}
+
+bool LSql::Query::bindBlob(int index, const void* data, std::size_t size)
+{
+    if (isValid()) {
+        return sqlite3_bind_blob(m_stmt, index, data, size, nullptr) == SQLITE_OK;
+    }
+
+    return false;
+}
+
+bool LSql::Query::bindString(int index, const char* data, std::size_t size)
+{
+    if (isValid()) {
+        return sqlite3_bind_text(m_stmt, index, data, size, nullptr) == SQLITE_OK;
     }
 
     return false;

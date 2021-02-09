@@ -3,7 +3,7 @@
 
 #include "type.h"
 
-#include <vector>
+#include <span>
 #include <string>
 #include <cstring>
 #include <cstdint>
@@ -34,9 +34,9 @@ public:
     bool bind(int index, std::int32_t value);
     bool bind(int index, std::int64_t value);
     bool bind(int index, double value);
-    bool bind(int index, const std::string& value);
-    bool bind(int index, const std::vector<std::uint8_t>& value);
     bool bind(int index, const Value& value);
+    bool bindBlob(int index, const void* data, std::size_t size);
+    bool bindString(int index, const char* data, std::size_t size);
 
     bool step();
 

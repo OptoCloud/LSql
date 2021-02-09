@@ -70,7 +70,7 @@ bool LSql::Connection::execute(const char* statement)
 bool LSql::Connection::tableExists(const char* apTableName)
 {
     Query query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", *this);
-    query.bind(1, apTableName);
+    query.bindString(1, apTableName, strlen(apTableName));
     (void)query.step(); // Cannot return false, as the above query always return a result
     return (1 == query.column(0).getInt());
 }
