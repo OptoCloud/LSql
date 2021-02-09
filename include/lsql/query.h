@@ -36,7 +36,9 @@ public:
     bool bind(int index, double value);
     bool bind(int index, const Value& value);
     bool bindBlob(int index, const void* data, std::size_t size);
+    inline bool bindBlob(int index, std::span<const std::uint8_t> blob) { return bindBlob(index, blob.data(), blob.size()); }
     bool bindString(int index, const char* data, std::size_t size);
+    inline bool bindString(int index, const std::string& string) { return bindString(index, string.data(), string.size()); }
 
     bool step();
 
