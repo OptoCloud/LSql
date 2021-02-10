@@ -5,28 +5,26 @@
 
 #include <span>
 #include <string>
-#include <cstring>
+#include <vector>
+#include <memory>
 #include <cstdint>
 
 typedef struct sqlite3_stmt sqlite3_stmt;
 
-namespace LSql {
+namespace SQLite {
 class Column;
 class Connection;
-class Value;
 
 class Query
 {
-    friend Column;
-    friend Connection;
+    friend SQLite::Column;
+    friend SQLite::Connection;
 
-    Query();
-    Query(const Query& other);
-    Query& operator=(const LSql::Query& other);
+    Query() = default;
+    Query(std::shared_ptr<SQLite::Connection> connection, const char* statement, int statementLen);
+    Query(const SQLite::Query& other) = default;
+    SQLite::Query& operator=(const SQLite::Query& other) = default;
 public:
-    Query(const char* statement, int statementLen, LSql::Connection& connection);
-    inline Query(const std::string& statement, LSql::Connection& connection) : Query(statement.data(), (int)statement.size(), connection){};
-    inline Query(const char* statement, LSql::Connection& connection) : Query(statement, strlen(statement), connection) {}
     ~Query();
 
     bool isValid() const;
@@ -34,17 +32,20 @@ public:
     bool bindInt32(int index, std::int32_t value);
     bool bindInt64(int index, std::int64_t value);
     bool bindReal(int index, double value);
-    bool bindValue(int index, const Value& value);
+
     bool bindBlob(int index, const void* data, std::size_t size);
     inline bool bindBlob(int index, std::span<const std::uint8_t> blob) { return bindBlob(index, blob.data(), blob.size()); }
-    bool bindString(int index, const char* data, std::size_t size);
-    inline bool bindString(int index, const std::string& string) { return bindString(index, string.data(), string.size()); }
+    inline bool bindBlob(int index, const std::vector<std::uint8_t>& blob) { return bindBlob(index, blob.data(), blob.size()); }
+
+    bool bindText(int index, const char* data, std::size_t size);
+    inline bool bindText(int index, std::string_view text) { return bindText(index, text.data(), text.size()); }
+    inline bool bindText(int index, const std::string& text) { return bindText(index, text.data(), text.size()); }
 
     bool step();
 
     int columnCount() const;
-    LSql::Type getType(int col);
-    LSql::Column column(int col);
+    SQLite::Type getType(int col);
+    SQLite::Column column(int col);
 
     void finalize();
 private:

@@ -1,25 +1,34 @@
 #ifndef LSQL_TRANSACTION_H
 #define LSQL_TRANSACTION_H
 
-namespace LSql {
+#include <memory>
+
+namespace SQLite {
 class Connection;
 
 class Transaction
 {
-    friend Connection;
+    friend SQLite::Connection;
+
+    enum class Behavior {
+        DEFERRED,
+        IMMEDIATE,
+        EXCLUSIVE
+    };
+
     Transaction() = default;
-    Transaction(const Transaction& other) = default;
-    Transaction& operator=(const Transaction& other) = default;
+    Transaction(std::shared_ptr<SQLite::Connection> connection, SQLite::Transaction::Behavior behavior = Behavior::DEFERRED);
+    Transaction(const SQLite::Transaction& other) = default;
+    SQLite::Transaction& operator=(const SQLite::Transaction& other) = default;
 public:
-    Transaction(Connection& connection);
     ~Transaction();
 
     bool isOpen() const;
 
     bool commit();
-    bool rollback();
+    void rollback();
 private:
-    Connection* m_connection;
+    std::shared_ptr<SQLite::Connection> m_connection;
 };
 }
 #endif // LSQL_TRANSACTION_H

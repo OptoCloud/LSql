@@ -5,90 +5,79 @@
 #include "transaction.h"
 #include "column.h"
 #include "query.h"
-#include "value.h"
 
-LSql::Connection::Connection(const char* apFilename, /* ex: "file:database.db */
-                                      int aFlags,             /* = OpenMode::READONLY  */
-                                      int aBusyTimeoutMs      /* = 0                   */)
-    : m_db(nullptr)
-    , m_transaction(nullptr)
+#include <string_view>
+
+SQLite::Connection::Connection(sqlite3* db)
+    : m_db(db)
 {
-    if (apFilename != nullptr)
-    {
-        if (sqlite3_open_v2(apFilename, &m_db, aFlags, NULL) != SQLITE_OK) {
-            sqlite3_close_v2(m_db);
-            m_db = nullptr;
-            return;
-        }
 
-        if (aBusyTimeoutMs > 0) {
-            setBusyTimeout(aBusyTimeoutMs);
-        }
-    }
 }
 
-LSql::Connection::~Connection()
+std::shared_ptr<SQLite::Connection> SQLite::Connection::OpenConnection(const char* filename, int flags)
+{
+    sqlite3* db;
+    if (sqlite3_open_v2(filename, &db, flags, nullptr) != SQLITE_OK) {
+        sqlite3_close_v2(db);
+        return nullptr;
+    }
+    return std::shared_ptr<SQLite::Connection>(new SQLite::Connection(db));
+}
+
+SQLite::Connection::~Connection()
 {
     if (m_transaction != nullptr) {
         m_transaction->rollback();
     }
 
-    if (isOpen()) {
-        sqlite3_close_v2(m_db);
-    }
+    sqlite3_close_v2(m_db);
 }
 
-bool LSql::Connection::isOpen() const
+bool SQLite::Connection::setBusyTimeout(int busyTimeoutMs)
 {
-    return m_db != nullptr;
+    return sqlite3_busy_timeout(m_db, busyTimeoutMs);
 }
 
-bool LSql::Connection::setBusyTimeout(int aBusyTimeoutMs)
+SQLite::Transaction SQLite::Connection::beginDeferredTransaction()
 {
-    if (isOpen()) {
-        return sqlite3_busy_timeout(m_db, aBusyTimeoutMs);
-    }
-
-    return false;
+    return SQLite::Transaction(shared_from_this(), SQLite::Transaction::Behavior::DEFERRED);
 }
 
-LSql::Transaction LSql::Connection::transaction()
+SQLite::Transaction SQLite::Connection::beginImmediateTransaction()
 {
-    return Transaction(*this);
+    return SQLite::Transaction(shared_from_this(), SQLite::Transaction::Behavior::IMMEDIATE);
 }
 
-LSql::Query LSql::Connection::query(const char* statement)
+SQLite::Transaction SQLite::Connection::beginExclusiveTransaction()
 {
-    return Query(statement, *this);
+    return SQLite::Transaction(shared_from_this(), SQLite::Transaction::Behavior::EXCLUSIVE);
 }
 
-bool LSql::Connection::execute(const char* statement)
+SQLite::Query SQLite::Connection::makeQuery(const char* statement, int statementLen)
 {
-    return Query(statement, *this).step();
+    return SQLite::Query(shared_from_this(), statement, statementLen);
 }
 
-bool LSql::Connection::tableExists(const char* apTableName)
+bool SQLite::Connection::execute(const char* statement, int statementLen)
 {
-    Query query("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", *this);
-    query.bindString(1, apTableName, strlen(apTableName));
+    return makeQuery(statement, statementLen).step();
+}
+
+bool SQLite::Connection::tableExists(const char* tableName, int tableNameLen)
+{
+    using namespace std::literals;
+    auto query = makeQuery("SELECT count(*) FROM LSQL_master WHERE type='table' AND name=?"sv);
+    query.bindText(1, tableName, tableNameLen);
     (void)query.step(); // Cannot return false, as the above query always return a result
-    return (1 == query.column(0).getInt());
+    return (query.column(0).getInt64() > 0);
 }
 
-std::int64_t LSql::Connection::lastInsertedRowId() const
+std::int64_t SQLite::Connection::lastInsertedRowId() const
 {
-    if (isOpen()) {
-        return sqlite3_last_insert_rowid(m_db);
-    }
-
-    return 0;
+    return sqlite3_last_insert_rowid(m_db);
 }
 
-const char *LSql::Connection::lastError() const
+const char *SQLite::Connection::lastError() const
 {
-    if (isOpen()) {
-        return sqlite3_errmsg(m_db);
-    }
-
-    return "Database is not open!";
+    return sqlite3_errmsg(m_db);
 }

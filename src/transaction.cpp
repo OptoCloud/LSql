@@ -2,52 +2,60 @@
 
 #include "connection.h"
 
-LSql::Transaction::Transaction(LSql::Connection& connection)
-    : m_connection(nullptr)
+using namespace std::literals;
+
+SQLite::Transaction::Transaction(std::shared_ptr<SQLite::Connection> connection, SQLite::Transaction::Behavior behavior)
 {
-    if (connection.execute("BEGIN"))
-    {
-        m_connection = &connection;
-        m_connection->m_transaction = this;
+    std::string_view statement;
+    switch (behavior) {
+    case Behavior::DEFERRED:
+        statement = "BEGIN DEFERRED"sv;
+        break;
+    case Behavior::IMMEDIATE:
+        statement = "BEGIN IMMEDIATE"sv;
+        break;
+    case Behavior::EXCLUSIVE:
+        statement = "BEGIN EXCLUSIVE"sv;
+        break;
+    default:
+        return;
+    }
+
+    if (connection->execute(statement)) {
+        m_connection = connection;
     }
 }
 
-LSql::Transaction::~Transaction()
+SQLite::Transaction::~Transaction()
 {
     rollback();
 }
 
-bool LSql::Transaction::isOpen() const
+bool SQLite::Transaction::isOpen() const
 {
     return m_connection != nullptr;
 }
 
-bool LSql::Transaction::commit()
+bool SQLite::Transaction::commit()
 {
-    bool retval = false;
+    auto connection = m_connection;
 
-    if (isOpen())
-    {
-        LSql::Connection* connection = m_connection;
-        m_connection = nullptr;
-        retval = connection->execute("COMMIT");
+    if (connection != nullptr) {
+        m_connection.reset();
         connection->m_transaction = nullptr;
+        return connection->execute("COMMIT"sv);
     }
 
-    return retval;
+    return false;
 }
 
-bool LSql::Transaction::rollback()
+void SQLite::Transaction::rollback()
 {
-    bool retval = false;
+    auto connection = m_connection;
 
-    if (isOpen())
-    {
-        LSql::Connection* connection = m_connection;
-        m_connection = nullptr;
-        retval = connection->execute("ROLLBACK");
+    if (connection != nullptr) {
+        m_connection.reset();
         connection->m_transaction = nullptr;
+        connection->execute("ROLLBACK"sv);
     }
-
-    return retval;
 }

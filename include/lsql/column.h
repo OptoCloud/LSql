@@ -9,31 +9,27 @@
 
 typedef struct sqlite3_stmt sqlite3_stmt;
 
-namespace LSql {
+namespace SQLite {
 class Query;
-class Value;
 
 class Column
 {
-    friend LSql::Query;
-    friend LSql::Value;
+    friend SQLite::Query;
 public:
-    Column(LSql::Query* query, int col);
-    Column(const Column& other) = default;
-    Column& operator=(const Column& other) = default;
+    Column(SQLite::Query* query, int col);
+
     bool isValid() const;
 
-    LSql::Type type() const;
+    SQLite::Type type() const;
 
-    std::int32_t getInt();
+    std::int32_t getInt32();
     std::int64_t getInt64();
     double       getDouble();
-    std::string  getText();
-    std::vector<std::uint8_t> getBlob();
-
-    LSql::Value getValue(); ///< Allocates a copy of the value at the row, making it independant from the Query
+    const char*  getDataText();
+    const void*  getDataBlob();
+    int          getDataSize();
 private:
-    LSql::Query* m_query;
+    SQLite::Query* m_query;
     int m_col;
 };
 }
