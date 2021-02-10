@@ -12,11 +12,14 @@ typedef struct sqlite3 sqlite3;
 namespace SQLite {
 class Transaction;
 
-class Connection : std::enable_shared_from_this<SQLite::Connection>
+class Connection : public std::enable_shared_from_this<SQLite::Connection>
 {
     friend SQLite::Transaction;
     friend SQLite::Query;
-    Connection(sqlite3* db);
+
+    Connection() = default;
+    Connection(SQLite::Connection&) = default;
+    Connection& operator=(const SQLite::Connection&) = default;
 public:
     enum OpenMode : int
     {
@@ -25,6 +28,7 @@ public:
         CREATE    = 4,
     };
 
+    Connection(sqlite3* db);
     static std::shared_ptr<SQLite::Connection> OpenConnection(const char* filename, int flags = OpenMode::READONLY);
     ~Connection();
 

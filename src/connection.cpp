@@ -10,6 +10,7 @@
 
 SQLite::Connection::Connection(sqlite3* db)
     : m_db(db)
+    , m_transaction(nullptr)
 {
 
 }
@@ -21,7 +22,7 @@ std::shared_ptr<SQLite::Connection> SQLite::Connection::OpenConnection(const cha
         sqlite3_close_v2(db);
         return nullptr;
     }
-    return std::shared_ptr<SQLite::Connection>(new SQLite::Connection(db));
+    return std::make_shared<SQLite::Connection>(db);
 }
 
 SQLite::Connection::~Connection()
