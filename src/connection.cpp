@@ -73,6 +73,11 @@ bool SQLite::Connection::tableExists(const char* tableName, int tableNameLen)
     return (query.column(0).getInt64() > 0);
 }
 
+int SQLite::Connection::changes() const
+{
+    return sqlite3_changes(m_db);
+}
+
 std::int64_t SQLite::Connection::lastInsertedRowId() const
 {
     return sqlite3_last_insert_rowid(m_db);

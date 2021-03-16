@@ -50,6 +50,7 @@ public:
     inline bool tableExists(std::string_view tableName) { return tableExists(tableName.data(), (int)tableName.size()); }
     inline bool tableExists(const std::string& tableName) { return tableExists(tableName.data(), (int)tableName.size()); }
 
+    int changes() const;
     std::int64_t lastInsertedRowId() const;
 
     const char* lastError() const;
