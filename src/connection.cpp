@@ -10,9 +10,7 @@
 
 SQLite::Connection::Connection(sqlite3* db)
     : m_db(db)
-    , m_transaction(nullptr)
 {
-
 }
 
 std::shared_ptr<SQLite::Connection> SQLite::Connection::OpenConnection(const char* filename, int flags)
@@ -27,10 +25,6 @@ std::shared_ptr<SQLite::Connection> SQLite::Connection::OpenConnection(const cha
 
 SQLite::Connection::~Connection()
 {
-    if (m_transaction != nullptr) {
-        m_transaction->rollback();
-    }
-
     sqlite3_close_v2(m_db);
 }
 

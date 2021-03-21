@@ -42,7 +42,6 @@ bool SQLite::Transaction::commit()
 
     if (connection != nullptr) {
         m_connection.reset();
-        connection->m_transaction = nullptr;
         return connection->execute("COMMIT"sv);
     }
 
@@ -55,7 +54,6 @@ void SQLite::Transaction::rollback()
 
     if (connection != nullptr) {
         m_connection.reset();
-        connection->m_transaction = nullptr;
         connection->execute("ROLLBACK"sv);
     }
 }

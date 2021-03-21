@@ -56,7 +56,6 @@ public:
     const char* lastError() const;
 private:
     sqlite3* m_db;
-    SQLite::Transaction* m_transaction;
 };
 }
 
