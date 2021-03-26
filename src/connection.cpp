@@ -61,7 +61,7 @@ bool SQLite::Connection::execute(const char* statement, int statementLen)
 bool SQLite::Connection::tableExists(const char* tableName, int tableNameLen)
 {
     using namespace std::literals;
-    auto query = makeQuery("SELECT count(*) FROM LSQL_master WHERE type='table' AND name=?"sv);
+    auto query = makeQuery("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?"sv);
     query.bindText(1, tableName, tableNameLen);
     (void)query.step(); // Cannot return false, as the above query always return a result
     return (query.column(0).getInt64() > 0);
