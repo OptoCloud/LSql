@@ -1,6 +1,6 @@
 #include "type.h"
 
-#include "internal/sqlite3.h"
+#include "sqlite3.h"
 
 static_assert ((int)SQLite::Type::Integer == SQLITE_INTEGER, "SQLite type-id mismatch! (Integer)");
 static_assert ((int)SQLite::Type::Real    == SQLITE_FLOAT,   "SQLite type-id mismatch! (Real)");

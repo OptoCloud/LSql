@@ -1,6 +1,6 @@
 #include "connection.h"
 
-#include "internal/sqlite3.h"
+#include "sqlite3.h"
 
 #include "transaction.h"
 #include "column.h"

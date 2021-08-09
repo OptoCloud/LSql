@@ -2,7 +2,7 @@
 
 #include <cstring>
 
-#include "internal/sqlite3.h"
+#include "sqlite3.h"
 
 #include "connection.h"
 #include "column.h"
